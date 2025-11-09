@@ -49,4 +49,81 @@ The dataset contains 6 main tables:
 
 Data Source: [Maven Analytics – Fuzzy Factory E-Commerce Dataset](https://www.mavenanalytics.io/)
 
+🧱 Project Structure
+MavenEcom_SQL_Insights/
+│
+├── data/
+│ ├── orders.xlsx
+│ ├── order_items.xlsx
+│ ├── order_item_refunds.xlsx
+│ ├── website_sessions.xlsx
+│ ├── website_pageviews.xlsx
+│ └── products.xlsx
+│
+├── scripts/
+│ ├── 00_data_load.sql # Data import & table creation
+│ ├── 01_data_validation.sql # Data cleaning & verification
+│ ├── 02_exploration.sql # Initial exploration & KPIs
+│ ├── 03_marketing_performance.sql
+│ ├── 04_conversion_funnel.sql
+│ ├── 05_revenue_analysis.sql
+│ └── 06_summary_views.sql
+│
+├── docs/
+│ ├── ERD_diagram.png
+│ ├── dashboard_preview.png
+│ └── project_report.pdf
 
+Tools & Technologies
+Category	Tools
+Database	PostgreSQL
+Analysis	SQL (CTEs, subqueries, window functions)
+Visualization	Power BI 
+Documentation	Markdown + GitHub
+Version Control	Git
+
+🧮 Key Skills Demonstrated
+
+✅ Database design and schema understanding
+✅ Advanced SQL analytics (joins, CTEs, subqueries, window functions)
+✅ KPI and marketing performance measurement
+✅ Conversion rate and customer journey analysis
+✅ Data-driven decision making
+✅ Dashboard visualization & storytelling
+
+🚀 Next Steps
+
+Integrate results into a Power BI dashboard
+
+Build automated ETL SQL pipelines
+
+Perform cohort and retention analysis
+
+Apply statistical testing for marketing optimization
+
+🧭 ERD (Entity Relationship Diagram)
+
+(Preview of database structure)
+
+
+
+📈 Sample Dashboard (Preview)
+
+ Using Power BI 
+
+
+
+👤 Author
+
+Yaseen Ali
+🎓 Data Analyst | SQL | Python | Excel | Power BI
+📍 Based in Romania | Fluent in English, Arabic, Romanian
+🔗 LinkedIn : www.linkedin.com/in/yaseen-saeed
+
+🔗 GitHub
+
+💡 “Turning Data into Actionable Insights.”
+
+🏷️ Topics (for GitHub Tags)
+
+sql data-analysis ecommerce business-intelligence portfolio-project mysql marketing-analytics data-visualization insights maven-analytics
