@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maven Fuzzy Factory — Analytics Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f4f0; color: #1a1a18; font-size: 14px; }
+  .header { background: #1a1a18; color: #fff; padding: 24px 32px; display: flex; justify-content: space-between; align-items: center; }
+  .header h1 { font-size: 20px; font-weight: 500; }
+  .header .sub { font-size: 13px; color: #888; margin-top: 4px; }
+  .badge-live { background: #1D9E75; color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 11px; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px 20px; }
+  .kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; }
+  .kpi { background: #fff; border-radius: 10px; padding: 16px; border: 0.5px solid #e0ddd5; }
+  .kpi-label { font-size: 11px; color: #888; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .kpi-value { font-size: 24px; font-weight: 500; color: #1a1a18; }
+  .kpi-sub { font-size: 11px; color: #aaa; margin-top: 4px; }
+  .kpi-up { color: #1D9E75; font-size: 11px; margin-top: 4px; }
+  .section { margin-bottom: 24px; }
+  .section-title { font-size: 12px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+  .chart-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .chart-grid-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+  .card { background: #fff; border-radius: 10px; padding: 18px 20px; border: 0.5px solid #e0ddd5; }
+  .card-title { font-size: 13px; font-weight: 500; color: #1a1a18; margin-bottom: 14px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #666; }
+  .legend-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  thead th { text-align: left; color: #888; font-weight: 400; padding: 6px 10px; border-bottom: 1px solid #f0ede6; }
+  tbody td { padding: 9px 10px; border-bottom: 0.5px solid #f0ede6; color: #1a1a18; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #faf9f6; }
+  .pill { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 500; }
+  .pill-warn { background: #FFF3CD; color: #856404; }
+  .pill-danger { background: #FDECEA; color: #A32D2D; }
+  .pill-ok { background: #D4EDDA; color: #155724; }
+  .pill-info { background: #D1ECF1; color: #0C5460; }
+  .bar-bg { background: #f0ede6; border-radius: 4px; height: 7px; overflow: hidden; flex: 1; }
+  .bar-fill { height: 100%; border-radius: 4px; }
+  .insight { background: #f0f7ff; border-left: 3px solid #378ADD; border-radius: 0 8px 8px 0; padding: 12px 14px; margin-bottom: 10px; font-size: 12px; line-height: 1.6; }
+  .insight strong { color: #185FA5; }
+  .insight-danger { background: #fff5f5; border-left-color: #E24B4A; }
+  .insight-danger strong { color: #A32D2D; }
+  .insight-success { background: #f0fff4; border-left-color: #1D9E75; }
+  .insight-success strong { color: #0F6E56; }
+  .insight-warn { background: #fffbf0; border-left-color: #EF9F27; }
+  .insight-warn strong { color: #854F0B; }
+  .cross-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 12px; }
+  .cross-label { flex: 1; color: #555; }
+  .cross-count { font-weight: 500; min-width: 40px; text-align: right; color: #378ADD; }
+  footer { text-align: center; padding: 20px; color: #aaa; font-size: 11px; border-top: 1px solid #e8e5df; margin-top: 12px; }
+  @media (max-width: 768px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .chart-grid-2, .chart-grid-3 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>🧸 Maven Fuzzy Factory — Analytics Dashboard</h1>
+    <div class="sub">E-Commerce SQL Analytics Project &nbsp;|&nbsp; Mar 2012 – Mar 2015 &nbsp;|&nbsp; Yaseen Ali</div>
+  </div>
+  <span class="badge-live">Real Data</span>
+</div>
+
+<div class="container">
+
+  <!-- KPI Row -->
+  <div class="section">
+    <div class="section-title">Executive KPIs</div>
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-label">Total Revenue</div>
+        <div class="kpi-value">$1.94M</div>
+        <div class="kpi-sub">Mar 2012 – Mar 2015</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Gross Profit</div>
+        <div class="kpi-value">$1.22M</div>
+        <div class="kpi-up">▲ 62.7% margin</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Net Revenue</div>
+        <div class="kpi-value">$1.85M</div>
+        <div class="kpi-sub">After $85K refunds</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Total Orders</div>
+        <div class="kpi-value">32,313</div>
+        <div class="kpi-up">▲ 8.3× growth</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Avg Order Value</div>
+        <div class="kpi-value">$59.99</div>
+        <div class="kpi-sub">$49.99 → $63.80</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Revenue Trend + Doughnut -->
+  <div class="section">
+    <div class="section-title">Revenue & Orders Trend</div>
+    <div class="chart-grid-3">
+      <div class="card">
+        <div class="card-title">Monthly Revenue & Orders (Mar 2012 – Mar 2015)</div>
+        <div class="legend">
+          <span class="legend-item"><span class="legend-dot" style="background:#378ADD"></span>Revenue ($)</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#7F77DD"></span>Orders</span>
+        </div>
+        <div style="position:relative;height:220px"><canvas id="cTrend"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Revenue Share by Product</div>
+        <div style="position:relative;height:180px;margin-bottom:12px"><canvas id="cDonut"></canvas></div>
+        <div style="font-size:11px;color:#888;line-height:1.8;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span style="width:9px;height:9px;background:#378ADD;border-radius:2px;display:inline-block"></span>Mr. Fuzzy — $1.21M (62.5%)</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span style="width:9px;height:9px;background:#1D9E75;border-radius:2px;display:inline-block"></span>Forever Love — $347K (17.9%)</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span style="width:9px;height:9px;background:#EF9F27;border-radius:2px;display:inline-block"></span>Sugar Panda — $229K (11.8%)</div>
+          <div style="display:flex;align-items:center;gap:6px"><span style="width:9px;height:9px;background:#D4537E;border-radius:2px;display:inline-block"></span>Mini Bear — $150K (7.8%)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Yearly bar + margin -->
+  <div class="section">
+    <div class="section-title">Year-over-Year Performance</div>
+    <div class="chart-grid-2">
+      <div class="card">
+        <div class="card-title">Annual Orders & Revenue</div>
+        <div class="legend">
+          <span class="legend-item"><span class="legend-dot" style="background:#378ADD"></span>Orders</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#1D9E75"></span>Revenue ($K)</span>
+        </div>
+        <div style="position:relative;height:200px"><canvas id="cYearly"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Gross Margin by Product (%)</div>
+        <div style="position:relative;height:200px"><canvas id="cMargin"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Table -->
+  <div class="section">
+    <div class="section-title">Product Performance Deep-Dive</div>
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Units Sold</th>
+            <th>Revenue</th>
+            <th>Gross Profit</th>
+            <th>Margin</th>
+            <th>Refund Rate</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>The Original Mr. Fuzzy</strong></td>
+            <td>24,226</td>
+            <td>$1,211,058</td>
+            <td>$738,893</td>
+            <td>61.0%</td>
+            <td>5.11%</td>
+            <td><span class="pill pill-warn">Concentration Risk</span></td>
+          </tr>
+          <tr>
+            <td><strong>The Forever Love Bear</strong></td>
+            <td>5,796</td>
+            <td>$347,702</td>
+            <td>$217,350</td>
+            <td>62.5%</td>
+            <td>2.23%</td>
+            <td><span class="pill pill-ok">Healthy</span></td>
+          </tr>
+          <tr>
+            <td><strong>The Birthday Sugar Panda</strong></td>
+            <td>4,985</td>
+            <td>$229,260</td>
+            <td>$157,028</td>
+            <td>68.5%</td>
+            <td>6.04%</td>
+            <td><span class="pill pill-danger">High Refunds</span></td>
+          </tr>
+          <tr>
+            <td><strong>The Hudson River Mini Bear</strong></td>
+            <td>5,018</td>
+            <td>$150,490</td>
+            <td>$102,869</td>
+            <td>68.4%</td>
+            <td>1.28%</td>
+            <td><span class="pill pill-info">Underexposed</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Refund bars + cross-sell -->
+  <div class="section">
+    <div class="section-title">Refund Analysis & Cross-Sell Pairs</div>
+    <div class="chart-grid-2">
+      <div class="card">
+        <div class="card-title">Refund Rate by Product</div>
+        <div style="display:flex;flex-direction:column;gap:14px;padding:4px 0">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="width:175px;font-size:12px;color:#555">Birthday Sugar Panda</span>
+            <div class="bar-bg"><div class="bar-fill" style="width:80%;background:#E24B4A"></div></div>
+            <span style="min-width:38px;text-align:right;font-size:12px;font-weight:500;color:#E24B4A">6.04%</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="width:175px;font-size:12px;color:#555">Original Mr. Fuzzy</span>
+            <div class="bar-bg"><div class="bar-fill" style="width:67%;background:#BA7517"></div></div>
+            <span style="min-width:38px;text-align:right;font-size:12px;font-weight:500;color:#BA7517">5.11%</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="width:175px;font-size:12px;color:#555">Forever Love Bear</span>
+            <div class="bar-bg"><div class="bar-fill" style="width:29%;background:#378ADD"></div></div>
+            <span style="min-width:38px;text-align:right;font-size:12px;font-weight:500;color:#378ADD">2.23%</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="width:175px;font-size:12px;color:#555">Hudson River Mini Bear</span>
+            <div class="bar-bg"><div class="bar-fill" style="width:17%;background:#1D9E75"></div></div>
+            <span style="min-width:38px;text-align:right;font-size:12px;font-weight:500;color:#1D9E75">1.28%</span>
+          </div>
+        </div>
+        <div style="margin-top:18px;padding-top:14px;border-top:0.5px solid #f0ede6;">
+          <div class="card-title" style="margin-bottom:10px">Refund Financial Impact</div>
+          <div style="font-size:12px;color:#555;line-height:2">
+            Total refund transactions: <strong>1,731</strong><br>
+            Total refund amount: <strong>$85,339</strong><br>
+            Sugar Panda refunds: <strong>$13,843</strong> (16.2% of total)<br>
+            Mr. Fuzzy refunds: <strong>$61,838</strong> (72.5% of total)
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Top Cross-Sell Pairs (Natural Bundles)</div>
+        <div style="margin-bottom:18px">
+          <div class="cross-row">
+            <div class="cross-label">Mr. Fuzzy + Mini Bear</div>
+            <div class="bar-bg"><div class="bar-fill" style="width:100%;background:#378ADD"></div></div>
+            <div class="cross-count">3,142×</div>
+          </div>
+          <div class="cross-row">
+            <div class="cross-label">Mr. Fuzzy + Sugar Panda</div>
+            <div class="bar-bg"><div class="bar-fill" style="width:65%;background:#7F77DD"></div></div>
+            <div class="cross-count">2,036×</div>
+          </div>
+          <div class="cross-row">
+            <div class="cross-label">Mr. Fuzzy + Forever Love</div>
+            <div class="bar-bg"><div class="bar-fill" style="width:30%;background:#1D9E75"></div></div>
+            <div class="cross-count">944×</div>
+          </div>
+          <div class="cross-row">
+            <div class="cross-label">Forever Love + Mini Bear</div>
+            <div class="bar-bg"><div class="bar-fill" style="width:22%;background:#EF9F27"></div></div>
+            <div class="cross-count">680×</div>
+          </div>
+        </div>
+        <div style="background:#f0f7ff;border-radius:8px;padding:12px;font-size:12px;color:#185FA5">
+          <strong>23.9% of all orders are multi-item.</strong><br>
+          Formalizing the Mr. Fuzzy + Mini Bear bundle could push AOV above $65 and increase revenue per customer.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Strategic Recommendations -->
+  <div class="section">
+    <div class="section-title">Strategic Recommendations</div>
+    <div class="insight insight-danger">
+      <strong>1. Reduce SKU concentration risk</strong> — The Original Mr. Fuzzy drives 62.5% of revenue ($1.21M). A supply issue, quality defect, or trend shift could cripple the business. Target reducing this below 50% through active promotion of products 2–4 within 12 months.
+    </div>
+    <div class="insight insight-danger">
+      <strong>2. Investigate Sugar Panda quality</strong> — 6.04% refund rate is the highest in the portfolio and 4.7× higher than the Mini Bear. Root-cause analysis is required. Fixing this could recover $13,000+ annually in lost refund costs and protect the 68.5% margin.
+    </div>
+    <div class="insight insight-success">
+      <strong>3. Formalize the Mr. Fuzzy + Mini Bear bundle</strong> — This pair was bought together 3,142 times organically — the strongest cross-sell signal in the data. A "Bundle &amp; Save" offer at $69.99 (vs $79.98 individual) could boost AOV while increasing Mini Bear visibility.
+    </div>
+    <div class="insight insight-warn">
+      <strong>4. Address Q1 seasonality</strong> — Revenue drops 35–40% every January–February vs Q4 peak. Valentine's Day (Feb) is an untapped opportunity for the Forever Love Bear. A targeted campaign could recover $50K+ in missed Q1 revenue.
+    </div>
+    <div class="insight">
+      <strong>5. Invest in the Hudson River Mini Bear</strong> — Best risk profile in the portfolio: 68.4% margin, 1.28% refund rate, $29.99 entry price. It's an ideal upsell and bundle partner but is under-promoted. Increasing its visibility could add $30K–$50K annually with minimal operational risk.
+    </div>
+  </div>
+
+</div>
+
+<footer>Maven Fuzzy Factory Analytics Dashboard &nbsp;|&nbsp; Data: Mar 2012 – Mar 2015 &nbsp;|&nbsp; Built by Yaseen Ali &nbsp;|&nbsp; SQL Analytics Project</footer>
+
+<script>
+const gridColor = 'rgba(0,0,0,0.06)';
+const tickColor = '#999';
+const base = { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{grid:{color:gridColor},ticks:{color:tickColor,font:{size:10}}},y:{grid:{color:gridColor},ticks:{color:tickColor,font:{size:10}}}}};
+
+// Monthly trend
+const mLabels = ['2012-03','2012-04','2012-05','2012-06','2012-07','2012-08','2012-09','2012-10','2012-11','2012-12','2013-01','2013-02','2013-03','2013-04','2013-05','2013-06','2013-07','2013-08','2013-09','2013-10','2013-11','2013-12','2014-01','2014-02','2014-03','2014-04','2014-05','2014-06','2014-07','2014-08','2014-09','2014-10','2014-11','2014-12','2015-01','2015-02','2015-03'];
+const mRevenue = [2999,4949,5399,6999,8448,11398,14347,18546,30894,25295,19966,26515,19896,28584,29364,30544,31144,31374,32724,38243,46631,58263,56569,66013,68190,78725,88935,80051,83289,84716,92232,103906,128163,144823,132212,129213,78951];
+const mOrders  = [60,99,108,140,169,228,287,371,618,506,390,498,385,553,571,593,604,608,629,708,861,1047,982,1021,1066,1241,1368,1239,1286,1325,1424,1609,1985,2314,2098,2068,1254];
+
+new Chart(document.getElementById('cTrend'), {
+  data:{
+    labels: mLabels,
+    datasets:[
+      {type:'bar',  label:'Revenue ($)', data: mRevenue, backgroundColor:'rgba(55,138,221,0.25)', borderColor:'#378ADD', borderWidth:1, borderRadius:2, yAxisID:'y'},
+      {type:'line', label:'Orders',      data: mOrders,  borderColor:'#7F77DD', backgroundColor:'rgba(127,119,221,0.08)', fill:true, tension:0.4, pointRadius:0, borderWidth:1.5, yAxisID:'y2'}
+    ]
+  },
+  options:{...base, scales:{
+    x:{grid:{color:gridColor},ticks:{color:tickColor,font:{size:9},maxTicksLimit:12,autoSkip:true}},
+    y:{grid:{color:gridColor},ticks:{color:tickColor,font:{size:10}},position:'left',title:{display:true,text:'Revenue ($)',color:tickColor,font:{size:10}}},
+    y2:{grid:{display:false},ticks:{color:tickColor,font:{size:10}},position:'right',title:{display:true,text:'Orders',color:tickColor,font:{size:10}}}
+  }}
+});
+
+// Donut
+new Chart(document.getElementById('cDonut'), {
+  type:'doughnut',
+  data:{
+    labels:['Mr. Fuzzy 62.5%','Forever Love 17.9%','Sugar Panda 11.8%','Mini Bear 7.8%'],
+    datasets:[{data:[62.5,17.9,11.8,7.8],backgroundColor:['#378ADD','#1D9E75','#EF9F27','#D4537E'],borderWidth:2,borderColor:'#fff',hoverOffset:6}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>` ${i.label}`}}}}
+});
+
+// Yearly
+new Chart(document.getElementById('cYearly'), {
+  type:'bar',
+  data:{
+    labels:['2012','2013','2014','2015 (Q1)'],
+    datasets:[
+      {label:'Orders',     data:[2586,7447,16860,5420], backgroundColor:'#378ADD', borderRadius:4, yAxisID:'y'},
+      {label:'Rev ($K)',   data:[129,393,1076,340],      backgroundColor:'#1D9E75', borderRadius:4, yAxisID:'y2'}
+    ]
+  },
+  options:{...base,scales:{
+    x:{grid:{color:gridColor},ticks:{color:tickColor,font:{size:11}}},
+    y:{grid:{color:gridColor},ticks:{color:tickColor,font:{size:10}},title:{display:true,text:'Orders',color:tickColor,font:{size:10}}},
+    y2:{grid:{display:false},ticks:{color:tickColor,font:{size:10}},position:'right',title:{display:true,text:'Revenue ($K)',color:tickColor,font:{size:10}}}
+  }}
+});
+
+// Margin
+new Chart(document.getElementById('cMargin'), {
+  type:'bar',
+  data:{
+    labels:['Mr. Fuzzy','Forever Love','Sugar Panda','Mini Bear'],
+    datasets:[{data:[61.0,62.5,68.5,68.4],backgroundColor:['#378ADD','#1D9E75','#EF9F27','#D4537E'],borderRadius:4}]
+  },
+  options:{...base,scales:{
+    x:{grid:{color:gridColor},ticks:{color:tickColor,font:{size:10}}},
+    y:{grid:{color:gridColor},ticks:{color:tickColor,font:{size:10},callback:v=>v+'%'},min:55,max:72}
+  }}
+});
+</script>
+</body>
+</html>
